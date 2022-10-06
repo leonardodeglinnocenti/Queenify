@@ -7,7 +7,7 @@ public class Chessboard {
 	
 
 	public Chessboard(int n) throws IllegalArgumentException {
-		if (n >= 0) {
+		if (n >= 4) {
 			size = n;
 			B = new Symbol[n][n]; // an array with the proper size is initialized
 			for (int i = 0; i < size; i++) {
