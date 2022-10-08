@@ -48,7 +48,7 @@ public class Chessboard {
 	}
 
 	public int getRandomNumberInRange(int min, int max) throws IllegalArgumentException {
-		if (min >= max)
+		if (min > max)
 			throw new IllegalArgumentException("max must be greater than min");
 
 		Random r = new Random();
@@ -65,6 +65,18 @@ public class Chessboard {
 		return false;
 	}
 
+	public int[] getFreePlacesInLine(int line) { // this function returns in [0] the number of free places found followed by the free positions
+		int[] freePlaces = new int[size + 1]; // at most there are size free places + 1 to keep the number of places found
+		int counter = 1; // counts the found free places
+		for (int j = 0; j < size; j++) {
+			if (B[line][j] == Symbol.F) {
+				freePlaces[counter++] = j;
+			}
+		}
+		freePlaces[0] = --counter;
+		return freePlaces;
+	}
+
 	public Boolean placeRandomQueenInLine(int line) { // This method places a Queen in a random free (F) place 
 		int place;
 		boolean freeSpaceFound = false;
@@ -73,8 +85,20 @@ public class Chessboard {
 				freeSpaceFound = true;
 		if (freeSpaceFound) { // TODO: can this be improved?
 			do {
-				place = getRandomNumberInRange(0,size - 1);
+				place = getRandomNumberInRange(0, size - 1);
 			} while (B[line][place] != Symbol.F);
+		} else return false;
+		B[line][place] = Symbol.Q;
+		launchBeams(line, place);
+		return true;
+	}
+
+	public boolean optimizedPlaceRandomQueenInLine(int line) { // This method places a Queen in a random free (F) place
+		int place;
+		int[] freeSpacesFound = getFreePlacesInLine(line);
+		if (freeSpacesFound[0] > 0) { // TODO: can this be improved?
+			place = getRandomNumberInRange(1, freeSpacesFound[0]);
+			place = freeSpacesFound[place]; // get the selected free space
 		} else return false;
 		B[line][place] = Symbol.Q;
 		launchBeams(line, place);
@@ -103,6 +127,14 @@ public class Chessboard {
 		for (int i = 0; i < size; i++) {
 			if (!placeRandomQueenInLine(i))
 			       	return false;
+		}
+		return true;
+	}
+
+	public Boolean optimizedQueenify() {
+		for (int i = 0; i < size; i++) {
+			if (!optimizedPlaceRandomQueenInLine(i))
+				return false;
 		}
 		return true;
 	}
